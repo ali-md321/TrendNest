@@ -1,0 +1,19 @@
+{
+  "name": "trendnest",
+  "version": "1.0.0",
+  "description": "An E-commerce platform",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-md321/TrendNest.git"
+  },
+  "author": "Md Ali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ali-md321/TrendNest/issues"
+  },
+  "homepage": "https://github.com/ali-md321/TrendNest#readme"
+}
