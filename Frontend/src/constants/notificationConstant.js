@@ -1,0 +1,10 @@
+export const NOTIF_LIST_REQUEST = "NOTIF_LIST_REQUEST";
+export const NOTIF_LIST_SUCCESS = "NOTIF_LIST_SUCCESS";
+export const NOTIF_LIST_FAIL    = "NOTIF_LIST_FAIL";
+
+export const NOTIF_UNREAD_SET   = "NOTIF_UNREAD_SET";
+export const NOTIF_ADD_ONE      = "NOTIF_ADD_ONE";
+
+export const NOTIF_MARK_READ    = "NOTIF_MARK_READ";
+export const NOTIF_MARK_ALL     = "NOTIF_MARK_ALL";
+export const NOTIF_DELETE = "NOTIF_DELETE";

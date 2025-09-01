@@ -4,7 +4,8 @@
   "description": "An E-commerce platform",
   "main": "server.js",
   "scripts": {
-    "test": "npm start"
+    "test": "npm start",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,32 @@
   "bugs": {
     "url": "https://github.com/ali-md321/TrendNest/issues"
   },
-  "homepage": "https://github.com/ali-md321/TrendNest#readme"
+  "homepage": "https://github.com/ali-md321/TrendNest#readme",
+  "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.11.0",
+    "cookie": "^1.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.4.0",
+    "fs": "^0.0.1-security",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "nodemon": "^3.1.10",
+    "openai": "^5.12.2",
+    "path": "^0.12.7",
+    "razorpay": "^2.9.6",
+    "socket.io": "^4.8.1",
+    "stripe": "^18.4.0",
+    "web-push": "^3.6.7"
+  }
 }
