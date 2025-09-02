@@ -2,9 +2,23 @@ require('dotenv').config();
 const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
+const credentials = {
+  type: "service_account",
+  project_id: process.env.CLOUD_PROJECT_ID,
+  private_key_id: process.env.CLOUD_PRIVATE_KEY_ID,
+  private_key: process.env.CLOUD_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  client_email: process.env.CLOUD_CLIENT_EMAIL,
+  client_id: process.env.CLOUD_CLIENT_ID,
+  auth_uri: process.env.CLOUD_AUTH_URI,
+  token_uri: process.env.CLOUD_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.CLOUD_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.CLOUD_CLIENT_X509_CERT_URL,
+  universe_domain: process.env.CLOUD_UNIVERSE_DOMAIN,
+}
+
 const storage = new Storage({
-  projectId: process.env.CLOUD_PROJECTID,
-  keyFilename: path.resolve(process.env.CLOUD_KEYFILENAME),
+  projectId: process.env.CLOUD_PROJECT_ID,
+  credentials: credentials
 });
 
 const bucket = storage.bucket(process.env.CLOUD_BUCKET);

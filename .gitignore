@@ -1,5 +1,4 @@
 node_modules/
 .env
-Backend/assets/Google_Cloud_key.json
-Backend/assets/Firebase_Auth_ServiceAcc.json
+Backend/assets/*
 Backend/init/*
