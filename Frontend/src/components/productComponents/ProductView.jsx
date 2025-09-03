@@ -32,8 +32,12 @@ const ProductView = () => {
   );
 
   const handleCart = async (productId) => {
-    await dispatch(addCartAction(productId));
-    toast.success("Added to Cart");
+    if(!isAuthenticated){
+      navigate(`/login?redirect=/product/${product._id}`);
+    }else{
+      await dispatch(addCartAction(productId));
+      toast.success("Added to Cart");
+    }
   };
 
   const handleOrder = async () => {
