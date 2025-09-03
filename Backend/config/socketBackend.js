@@ -22,6 +22,8 @@ function initSocket(server) {
       const cookieToken = cookie.parse(cookiesHeader).token;
 
       const token = authToken || cookieToken;
+      console.log("AUth:",socket);
+      console.log("cookie:",cookiesHeader);
       if (!token) {
         // call next with error so client receives connect_error
         return next(new ErrorHandler("No auth token", 401));
