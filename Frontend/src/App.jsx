@@ -74,21 +74,27 @@ function App() {
 useEffect(() => {
   async function subscribeUser() {
     try {
-      // ✅ Fetch correct public VAPID key
+      // fetch public key from backend via axiosInstance
       const { data } = await axios.get("/api/push/public-key");
       const VAPID_PUBLIC_KEY = data.key;
-
-      // 1) Ask for permission
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        console.log("Notification permission denied");
+      if (!VAPID_PUBLIC_KEY) {
+        console.warn('No VAPID public key from server');
         return;
       }
 
-      // 2) Ensure service worker is ready
-      const reg = await navigator.serviceWorker.ready;
+      // Request permission
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        console.log('Notification permission denied');
+        return;
+      }
 
-      // 3) Check if already subscribed
+      // Register SW at root scope
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      // wait until the service worker is active
+      await navigator.serviceWorker.ready;
+
+      // check existing subscription
       let subscription = await reg.pushManager.getSubscription();
       if (!subscription) {
         subscription = await reg.pushManager.subscribe({
@@ -97,29 +103,21 @@ useEffect(() => {
         });
       }
 
-      console.log("✅ New subscription:", subscription);
+      // send subscription object to backend
+      await axios.post('/api/push/subscribe', { subscription }, { withCredentials: true });
 
-      // 4) Send subscription to backend
-      await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // include cookies/JWT
-        body: JSON.stringify({ subscription }),
-      });
-
-      console.log("✅ Subscription saved to backend");
+      console.log('Subscription saved');
 
     } catch (err) {
-      console.error("❌ Failed to subscribe:", err);
+      console.error('Failed to subscribe:', err);
     }
   }
 
-  if ("serviceWorker" in navigator && "PushManager" in window) {
-    navigator.serviceWorker.register("/sw.js").then(() => {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    // register and subscribe only when user is logged in
+    if (user) {
       subscribeUser();
-    });
+    }
   }
 }, [user]);
 
