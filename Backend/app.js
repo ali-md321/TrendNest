@@ -4,7 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
+const { ipKeyGenerator } = require('express-rate-limit');
 const { errorMiddleware } = require('./middlewares/errorMiddleware');
 const userRouter = require('./routers/userRouter');
 const productRouter = require('./routers/productRouter');
@@ -25,7 +25,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({extended : true}));
-app.use(rateLimit({ windowMs: 60*1000, max: 60, keyGenerator: (req) => req.ip,}));
+app.use(rateLimit({ windowMs: 60*1000, max: 60,standardHeaders: true, legacyHeaders: false, keyGenerator: ipKeyGenerator}));
 
 app.get("/test",(req,res)=> {
     res.send({message : "Working!.."})
@@ -33,7 +33,6 @@ app.get("/test",(req,res)=> {
 app.use("/api", userRouter);
 app.use("/api", productRouter);
 app.use("/api", orderRouter);
-app.use("/api", sellerRouter);
 app.use("/api", sellerRouter);
 app.use("/api", delivererRouter);
 app.use("/api", chatRouter);
