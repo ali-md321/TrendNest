@@ -8,25 +8,18 @@ const userSockets = new Map();
 
 function initSocket(server) {
   io = new Server(server, {
-      cors: { origin: ['http://localhost:5173',process.env.FRONTEND_URI].filter(Boolean), 
-      methods: ["GET", "POST"],
+      cors: { origin: ['http://localhost:5173',process.env.FRONTEND_URI], 
       credentials: true 
     }
   });
 
   io.use((socket, next) => {
     try {
-      // prefer auth token sent via socket auth payload
-      const authToken = socket.handshake?.auth?.token;
-      const cookiesHeader = socket.handshake?.headers?.cookie || "";
-      const cookieToken = cookie.parse(cookiesHeader).token;
-
-      const token = authToken || cookieToken;
-      console.log("AUth:",socket);
-      console.log("cookie:",cookiesHeader);
-      if (!token) {
-        // call next with error so client receives connect_error
-        return next(new ErrorHandler("No auth token", 401));
+      const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+      const token = cookies.token; // your JWT cookie
+      console.log("cookies: ",cookies);
+      if (!token){
+        throw next(new ErrorHandler("No auth token",400));
       }
 
       const payload = jwt.verify(token, process.env.JWT_SECRET);

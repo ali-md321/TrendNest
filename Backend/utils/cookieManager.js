@@ -7,7 +7,7 @@ const commonOptions = {
   httpOnly: true,
   maxAge: COOKIE_EXPIRE_DAYS * 24 * 60 * 60 * 1000,
   secure: isProd,                       // only send over HTTPS in prod
-  sameSite: isProd ? 'none' : 'lax',    // cross-site cookies need 'none' in prod
+  sameSite: isProd ? 'None' : 'Lax',    // cross-site cookies need 'none' in prod
 };
 
 if (process.env.COOKIE_DOMAIN && isProd) {
