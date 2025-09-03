@@ -6,13 +6,9 @@ const commonOptions = {
   expires: new Date(Date.now() + COOKIE_EXPIRE_DAYS * 24 * 60 * 60 * 1000),
   httpOnly: true,
   maxAge: COOKIE_EXPIRE_DAYS * 24 * 60 * 60 * 1000,
-  secure: isProd,                       // only send over HTTPS in prod
+  secure: true,                       // only send over HTTPS in prod
   sameSite: isProd ? 'None' : 'Lax',    // cross-site cookies need 'none' in prod
 };
-
-if (process.env.COOKIE_DOMAIN && isProd) {
-  commonOptions.domain = process.env.COOKIE_DOMAIN; // e.g. '.yourdomain.com'
-}
 
 exports.sendCookie = (user = {}, statusCode,res) => {
     const token = user.generateToken();
