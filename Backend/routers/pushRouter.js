@@ -8,25 +8,30 @@ router.get('/push/public-key', (req,res)=>{
   res.json({ key: process.env.VAPID_PUBLIC_KEY });
 });
 
-router.post('/push/subscribe', isAuthenticated , catchAsync(async (req,res)=>{
-   const { subscription } = req.body;
-    if (!subscription || !subscription.endpoint) {
-      return res.status(400).json({ success: false, message: "Invalid subscription" });
-    }
+// routes/pushRoutes.js (or wherever)
+router.post('/push/subscribe', isAuthenticated, catchAsync(async (req, res) => {
+  const { subscription } = req.body;
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ success: false, message: "Invalid subscription" });
+  }
 
-    // Save to DB (attach user if logged in)
-     await PushSubscription.updateOne(
-      { user: req.userId, endpoint: subscription.endpoint },
-      {
-        $set: {
-          keys: subscription.keys,
-        },
-      },
-      { upsert: true }
-    );
+  // Save whole subscription object (endpoint + keys + expirationTime)
+  await PushSubscription.updateOne(
+    { user: req.userId, endpoint: subscription.endpoint },
+    {
+      $set: {
+        user: req.userId,
+        endpoint: subscription.endpoint,
+        keys: subscription.keys || {},
+        raw: subscription
+      }
+    },
+    { upsert: true }
+  );
 
-    res.json({ success: true });
+  return res.json({ success: true });
 }));
+
 
 router.post('/push/unsubscribe', isAuthenticated , catchAsync(async (req,res)=>{
   const { endpoint } = req.body;
@@ -36,35 +41,37 @@ router.post('/push/unsubscribe', isAuthenticated , catchAsync(async (req,res)=>{
 
 router.post('/push/test', isAuthenticated, catchAsync(async (req, res) => {
   const { title, message, route } = req.body;
+  const subs = await PushSubscription.find({ user: req.userId });
+  if (!subs.length) return res.status(404).json({ success: false, message: 'No subscriptions' });
 
-  // Example: load subscriptions from DB (replace with your model)
-  const subscriptions = await PushSubscription.find({ user: req.userId });
-  if (!subscriptions.length) return res.status(404).json({ success:false, message: 'No subscriptions' });
+  const payload = { title: title || 'TrendNest', message: message || '', route: route || '/' };
 
-  const payload = { title, message, route };
+  const results = await Promise.allSettled(subs.map(s => {
+    if (!s || !s.endpoint) return Promise.reject(new Error('missing endpoint'));
+    const subObj = { endpoint: s.endpoint, keys: s.keys || s.raw?.keys || {} };
+    return sendPushNotification(subObj, payload);
+  }));
 
-  const results = [];
-  for (const s of subscriptions) {
-    try {
-        const subObj = {
-        endpoint: s.endpoint,
-        keys: s.keys,
-        expirationTime: null
-      };      
-      await sendPushNotification(subObj, payload);
-      results.push({ id: s._id, status: 'ok' });
-    } catch (err) {
-      console.error('Push send error for', s._id, err.message || err);
-      // optional: remove expired subscriptions
-      if (err.statusCode === 410 || err.statusCode === 404) {
-        await PushSubscription.deleteOne({ _id: s._id });
+  // remove expired or invalid subs
+  const failedToRemove = [];
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    const s = subs[i];
+    if (r.status === 'rejected') {
+      const sc = r.reason?.statusCode;
+      if (sc === 404 || sc === 410) {
+        failedToRemove.push(s._id);
+      } else {
+        console.error('Push error for', s._id, r.reason?.message || r.reason);
       }
-      results.push({ id: s._id, status: 'failed', error: err.message });
     }
   }
+  if (failedToRemove.length) {
+    await PushSubscription.deleteMany({ _id: { $in: failedToRemove } });
+  }
 
-  res.json({ success: true, results });
+  const sent = results.filter(r => r.status === 'fulfilled').length;
+  res.json({ success: true, sent, total: subs.length });
 }));
-
 
 module.exports = router;

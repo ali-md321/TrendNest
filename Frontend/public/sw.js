@@ -21,19 +21,24 @@ self.addEventListener("push", event => {
 
 self.addEventListener("notificationclick", event => {
   event.notification.close();
-  const route = event.notification.data?.route || "/";
+  const route = event.notification.data?.route || '/';
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientsArr => {
-      // If a tab with your app is open, focus it
-      for (const client of clientsArr) {
-        if (client.url.includes(location.origin)) {
-          client.focus();
-          client.postMessage({ action: "navigate", route });
-          return;
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
+      // focus a client if already open
+      for (const client of clientList) {
+        try {
+          const clientUrl = new URL(client.url);
+          if (clientUrl.origin === self.location.origin) {
+            client.focus();
+            client.postMessage({ action: 'navigate', route });
+            return;
+          }
+        } catch (e) {
+          // ignore
         }
       }
-      // Otherwise open a new tab
-      clients.openWindow(route);
+      // otherwise open a new window/tab
+      return clients.openWindow(route);
     })
   );
 });

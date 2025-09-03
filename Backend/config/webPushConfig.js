@@ -1,20 +1,36 @@
-// backend/config/webPush.js
-const webPush = require("web-push");
+// config/webPushConfig.js
+const webpush = require('web-push');
 
-webPush.setVapidDetails(
-  "mailto:uniqueguy3212005@gmail.com",
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
-
-async function sendPushNotification(subscription, payload) {
-  // subscription must be a JS object (not string)
-  const sub = (typeof subscription === 'string') ? JSON.parse(subscription) : subscription;
-  return webPush.sendNotification(sub, JSON.stringify(payload));
+if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+  console.warn('VAPID keys not set. Push notifications disabled.');
+} else {
+  webpush.setVapidDetails(
+    process.env.VAPID_CONTACT || 'mailto:uniqueguy3212005@gmail.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
 }
 
-module.exports = {
-  sendPushNotification,
-  webPush
-};
+async function sendPushNotification(subscription, payload) {
+  if (!subscription || !subscription.endpoint) {
+    throw new Error('Invalid subscription: missing endpoint');
+  }
 
+  // normalize keys shape (some DB shapes store differently)
+  const sub = {
+    endpoint: subscription.endpoint,
+    keys: subscription.keys || subscription.key || subscription.keys || {}
+  };
+
+  const body = typeof payload === 'string' ? payload : JSON.stringify(payload);
+
+  try {
+    return await webpush.sendNotification(sub, body);
+  } catch (err) {
+    // bubble useful info
+    err.info = { statusCode: err.statusCode, body: err.body };
+    throw err;
+  }
+}
+
+module.exports = { webpush, sendPushNotification };
