@@ -15,19 +15,24 @@ function initSocket(server) {
   });
 
   io.use((socket, next) => {
-    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-    const token = cookies.token; 
-    if (!token){
-      throw next(new ErrorHandler("No auth token",400));
-    }
-
     try {
+      // prefer auth token sent via socket auth payload
+      const authToken = socket.handshake?.auth?.token;
+      const cookiesHeader = socket.handshake?.headers?.cookie || "";
+      const cookieToken = cookie.parse(cookiesHeader).token;
+
+      const token = authToken || cookieToken;
+      if (!token) {
+        // call next with error so client receives connect_error
+        return next(new ErrorHandler("No auth token", 401));
+      }
+
       const payload = jwt.verify(token, process.env.JWT_SECRET);
       socket.userId = payload.id;
       socket.userRole = payload.role;
-      next();
+      return next();
     } catch (err) {
-      next(new Error("Invalid token"));
+      return next(new ErrorHandler("Invalid auth token", 401));
     }
   });
 

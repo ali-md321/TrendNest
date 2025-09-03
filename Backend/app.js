@@ -4,7 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
+const { ipKeyGenerator } = require('express-rate-limit');
 const { errorMiddleware } = require('./middlewares/errorMiddleware');
 const userRouter = require('./routers/userRouter');
 const productRouter = require('./routers/productRouter');
@@ -16,6 +16,12 @@ const pushRouter = require('./routers/pushRouter');
 const notificationRouter = require('./routers/notificationRouter');
 
 app.set('trust proxy', 1);
+process.on('unhandledRejection', (reason) => {
+  console.error('UNHANDLED_PROMISE_REJECTION:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT_EXCEPTION:', err);
+});
 
 app.use(helmet());
 app.use(cors({
@@ -25,15 +31,19 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({extended : true}));
-app.use(rateLimit({ windowMs: 60*1000, max: 60, standardHeaders: true, legacyHeaders: false, keyGenerator: (req) => req.ip, }));
-
+app.use(rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: ipKeyGenerator
+}));
 app.get("/test",(req,res)=> {
     res.send({message : "Working!.."})
 })
 app.use("/api", userRouter);
 app.use("/api", productRouter);
 app.use("/api", orderRouter);
-app.use("/api", sellerRouter);
 app.use("/api", sellerRouter);
 app.use("/api", delivererRouter);
 app.use("/api", chatRouter);
