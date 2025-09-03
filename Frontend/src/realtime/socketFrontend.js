@@ -5,8 +5,8 @@ export function connectSocket() {
   if (socket?.connected) return socket;
   socket = io("http://localhost:3000", {
     transports: ["websocket"],
-    withCredentials: true,   // must be true for cookies
-    timeout: 10000,          // increase timeout
+    withCredentials: true,
+    timeout: 10000,
   });
 
 

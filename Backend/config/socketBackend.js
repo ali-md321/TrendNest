@@ -8,7 +8,7 @@ const userSockets = new Map();
 
 function initSocket(server) {
   io = new Server(server, {
-      cors: { origin: ['http://localhost:5173',process.env.FRONTEND_URI].filter(boolean), 
+      cors: { origin: ['http://localhost:5173',process.env.FRONTEND_URI], 
       credentials: true 
     }
   });
@@ -16,6 +16,7 @@ function initSocket(server) {
   io.use((socket, next) => {
     const cookies = cookie.parse(socket.handshake.headers.cookie || "");
     const token = cookies.token; // your JWT cookie
+    console.log("cookies: ",cookies);
     if (!token){
       throw next(new ErrorHandler("No auth token",400));
     }
