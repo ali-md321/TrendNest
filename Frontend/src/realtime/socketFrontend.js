@@ -10,6 +10,7 @@ function getTokenFromCookie() {
 export function connectSocket() {
   if (socket?.connected) return socket;
   const token = getTokenFromCookie();
+  console.log("TokenSocket:",token);
   socket = io("https://trendnest-rety.onrender.com", {
     auth: { token }, 
     transports: ["websocket"],
