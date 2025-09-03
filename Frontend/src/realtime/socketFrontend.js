@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 let socket ;
 export function connectSocket() {
   if (socket?.connected) return socket;
-  socket = io("http://localhost:3000", {
+  socket = io("https://trendnest-rety.onrender.com", {
     transports: ["websocket"],
     withCredentials: true,   // must be true for cookies
     timeout: 10000,          // increase timeout
