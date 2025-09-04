@@ -114,6 +114,15 @@ exports.logoutUserController = (req,res) => {
   deleteCookie(200,res);
 }
 
+exports.getTokenForSocket = (req, res) => {
+  const token = jwt.sign(
+    { id: req.userId, role: req.role, purpose: 'socket' },
+    process.env.JWT_SECRET,
+    { expiresIn: '10m' }
+  );
+  res.json({ token });
+}
+
 exports.getUserController = catchAsync(async (req,res) => {
   const id = req.userId;
   const role = req.role;

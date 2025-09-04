@@ -25,7 +25,7 @@ const slides = [
   "/slideshow/slide4.png",
   "/slideshow/slide5.png",
 ];
-const slideIds = ["68abfce7f605057d7a606a89","68abfce6f605057d7a606a81","68abfce5f605057d7a606a7d","68abfce6f605057d7a606a85","68abfcc9ad718ca36097c9b8"]
+const slideIds = ["68abfb92dbb17c00e0691be1","68abfb91dbb17c00e0691bd9","68abfb90dbb17c00e0691bd5","68abfb92dbb17c00e0691bdd","68abfb8fdbb17c00e0691bd1"]
 const Home = () => {
   const dispatch = useDispatch();
   const [slide, setSlide] = useState(0);
