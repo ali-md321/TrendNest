@@ -9,6 +9,7 @@ const { sendCookie, deleteCookie } = require('../utils/cookieManager');
 const admin = require('../config/firebaseBackendConfig');
 const { getLatLngFromAddress, getLatLngFromCityPincode } = require("../utils/googleGeocoding");
 const { notifyUser } = require("../services/notificationService");
+const jwt = require("jsonwebtoken");
 
 module.exports.signUpController = catchAsync(async (req, res) => {
   const { idToken, name, email, phone, role, roleData } = req.body;
