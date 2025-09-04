@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { signUpController, LoginController, getUserController, logoutUserController, editUserController, deleteUserAccountController, getCartsSavedController, addToCartController, savedForLaterController, updateCartQtyController, removeCartController, removeSavedController, getWishListController, toggleWishlistController, addNewAddressController,editAddressController, deleteAddressController } = require('../controllers/userController');
+const { signUpController, LoginController, getUserController, logoutUserController, editUserController, deleteUserAccountController, getCartsSavedController, addToCartController, savedForLaterController, updateCartQtyController, removeCartController, removeSavedController, getWishListController, toggleWishlistController, addNewAddressController,editAddressController, deleteAddressController, getTokenForSocket } = require('../controllers/userController');
 const {isAuthenticated} = require('../middlewares/isAuthenticated');
 
 router.post("/user/signup",signUpController);
@@ -10,6 +10,7 @@ router.route("/user/me")
     .delete(isAuthenticated, deleteUserAccountController)
 
 router.get("/user/logout",isAuthenticated,logoutUserController)
+router.get("/get-token",isAuthenticated, getTokenForSocket)
 
 router.get("/carts-saved",isAuthenticated, getCartsSavedController);
 router.route("/cart/:productId")

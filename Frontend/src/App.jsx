@@ -57,19 +57,27 @@ function App() {
   const { user, isLoading, isAuthenticated } = useSelector((state) => state.user);
   const location = useLocation();
 
-  useEffect(() => {
+useEffect(() => {
   if (!user) return;
-  const socket = connectSocket();
-  if (!socket) return;
+  let socketInstance;
 
-  socket.on("notification:new", (data) => {
-    // show heads-up, update redux
-    dispatch(notificationReceived(data));
-    window.dispatchEvent(new CustomEvent("trendnest:heads-up", { detail: data }));
-  });
+  (async () => {
+    const socket = await connectSocket(); // <-- await fixes it
+    socketInstance = socket;
 
-  return () => socket.off("notification:new");
+    socket.on("notification:new", (data) => {
+      dispatch(notificationReceived(data));
+      window.dispatchEvent(new CustomEvent("trendnest:heads-up", { detail: data }));
+    });
+  })();
+
+  return () => {
+    if (socketInstance) {
+      socketInstance.off("notification:new");
+    }
+  };
 }, [user, dispatch]);
+
 
 useEffect(() => {
   async function subscribeUser() {

@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const Customer = require("../models/CustomerModel");
 const Seller = require('../models/SellerModel');
 const Product = require('../models/productModel');
@@ -96,10 +97,7 @@ module.exports.LoginController = catchAsync(async (req, res) => {
 
   let user = await Model.findOne({ phone });
   if (!user) {
-    return res.json({
-      message: `${role} with this phone does not exist!`,
-      user: null
-    });
+    throw new ErrorHandler(`${role} with this phone does not exist!`, 500);
   }
   await notifyUser(user._id, {
     type: "WELCOME",
@@ -112,6 +110,15 @@ module.exports.LoginController = catchAsync(async (req, res) => {
 
 exports.logoutUserController = (req,res) => {
   deleteCookie(200,res);
+}
+
+exports.getTokenForSocket = (req, res) => {
+  const token = jwt.sign(
+    { id: req.userId, role: req.role},
+    process.env.JWT_SECRET,
+    { expiresIn: '10m' }
+  );
+  res.json({ token });
 }
 
 exports.getUserController = catchAsync(async (req,res) => {
