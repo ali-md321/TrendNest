@@ -97,10 +97,7 @@ module.exports.LoginController = catchAsync(async (req, res) => {
 
   let user = await Model.findOne({ phone });
   if (!user) {
-    return res.json({
-      message: `${role} with this phone does not exist!`,
-      user: null
-    });
+    throw new ErrorHandler(`${role} with this phone does not exist!`, 404);
   }
   await notifyUser(user._id, {
     type: "WELCOME",

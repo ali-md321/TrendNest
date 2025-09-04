@@ -58,18 +58,25 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-  if (!user) return;
-  const socket = connectSocket();
-  if (!socket) return;
+    if (!user) return;
+    let socketInstance;
+    (async () => {
+      const socket = await connectSocket();
+      socketInstance = socket;
 
-  socket.on("notification:new", (data) => {
-    // show heads-up, update redux
-    dispatch(notificationReceived(data));
-    window.dispatchEvent(new CustomEvent("trendnest:heads-up", { detail: data }));
-  });
+      socket.on("notification:new", (data) => {
+        dispatch(notificationReceived(data));
+        window.dispatchEvent(new CustomEvent("trendnest:heads-up", { detail: data }));
+      });
+    })();
 
-  return () => socket.off("notification:new");
-}, [user, dispatch]);
+    return () => {
+      if (socketInstance) {
+        socketInstance.off("notification:new");
+      }
+    };
+  }, [user, dispatch]);
+
 
 useEffect(() => {
   async function subscribeUser() {

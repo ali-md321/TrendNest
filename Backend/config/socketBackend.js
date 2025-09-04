@@ -22,7 +22,6 @@ function initSocket(server) {
       const cookieToken = cookie.parse(cookieHeader || '').token || null;
 
       const token = authToken || cookieToken;
-      console.log("Token:",token);
       if (!token) return next(new Error('No auth token'));
 
       const payload = jwt.verify(token, process.env.JWT_SECRET);

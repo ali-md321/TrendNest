@@ -7,6 +7,7 @@ import trendNestLogo from '../../assets/BrandName.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUserAction } from '../../actions/userAction';
 import Loading from '../Layouts/ButtonLoading';
+import { toast } from 'react-toastify';
 
 function Signup() {
   const navigate = useNavigate();
@@ -108,9 +109,9 @@ function Signup() {
           licenseNumber: form.licenseNumber,
         };
       }
-      const {success} = await dispatch(registerUserAction({name: form.name,email: form.email,phone: form.phone,idToken,role: form.role,roleData}));
+      const {success, error} = await dispatch(registerUserAction({name: form.name,email: form.email,phone: form.phone,idToken,role: form.role,roleData}));
       if(success) navigate(redirect);
-      else navigate("/signup");
+      else toast.error(error);
     } catch (err) {
       console.error('Verification Error:', err);
     } finally {

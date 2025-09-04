@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 import { LoginUserAction } from '../../actions/userAction';
 import Loading from '../Layouts/ButtonLoading';
+import { toast } from 'react-toastify';
 
 function Login() {
   const navigate = useNavigate();
@@ -94,8 +95,10 @@ function Login() {
     try {
       const result = await confirmationResult.confirm(loginData.otp);
       const idToken = await result.user.getIdToken();
-      await dispatch(LoginUserAction({ phone: loginData.phone, idToken, role: loginData.role }));
-      navigate(redirect);
+      const res = await dispatch(LoginUserAction({ phone: loginData.phone, idToken, role: loginData.role }));
+      if(!res.success){
+        toast.error(res.error);
+      }else navigate(redirect);
     } catch (err) {
       console.error("Login error:", err);
       alert("Login failed. Check console.");

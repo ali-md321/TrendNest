@@ -16,7 +16,7 @@ export const registerUserAction = ({ name, email, phone, idToken, role, roleData
             type : USER_SIGNUP_FAIL,
             payload : error.response?.data?.message || error.message || "Something Went wrong"
         })
-        return {success : false};       
+        return {success : false,error : error.response?.data?.message};       
     }
 }
 
@@ -31,11 +31,12 @@ export const LoginUserAction = ({phone,idToken,role}) => async(dispatch) => {
         }) 
         return {success : true};       
     } catch (error) {
+        console.log(error);
         dispatch({
             type : USER_LOGIN_FAIL,
             payload : error.response?.data?.message || error.message || "Something Went wrong"
         })
-        return {success : false};       
+        return {success : false,error : error.response?.data?.message};       
     }
 } 
 
