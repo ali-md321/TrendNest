@@ -61,12 +61,20 @@ Full-Stack Multi-Role E-Commerce Platform using MERN, Socket.IO, and Google Clou
 ## Sneak Peek of TrendNest 🙈 :
 
 ### 👤 Customer Profile
-![Home 1](Git_Images/Home_1.png)
-![Home 2](Git_Images/Home_2.png)
-![Customer Profile](Git_Images/Customer_profile.png)
-![Product View](Git_Images/product_view.png)
-![Order Details](Git_Images/order_details.png)
-![Chat with AI](Git_Images/Chat_with_AI.png)
+<table>
+  <tr>
+    <td><img src="Git_Images/Home_1.png" alt="Home 1" /></td>
+    <td><img src="Git_Images/Home_2.png" alt="Home 2" /></td>
+  </tr>
+  <tr>
+    <td><img src="Git_Images/Customer_profile.png" alt="Customer Profile" /></td>
+    <td><img src="Git_Images/order_details.png" alt="Order Details"/></td>
+  </tr>
+  <tr>
+    <td><img src="Git_Images/product_view.png" alt="Seller Dashboard" /></td>
+    <td><img src="Git_Images/Chat_with_AI.png" alt="Chat with AI" /></td>
+  </tr>
+</table>
 
 ### 🛍️ Seller Dashboard
 ![Seller Dashboard](Git_Images/seller.png)
